@@ -12,15 +12,16 @@ Distribution:   Azure Linux
 
 
 Name:           %{srcname}
-Version:        1.1
-Release:        6%{?dist}
+Version:        1.3
+Release:        1%{?dist}
 Summary:        %{summary}
 
-%global git_tag RELEASE_%(r=%{version}; echo $r | tr '.' '_')
+# %global git_tag RELEASE_%(r=%{version}; echo $r | tr '.' '_')
 
 License:        GPLv3
-URL:            https://github.com/jdennis/keycloak-httpd-client-install
-Source0:        https://github.com/jdennis/keycloak-httpd-client-install/archive/%{git_tag}.tar.gz
+URL:            https://github.com/latchset/keycloak-httpd-client-install
+Source0:        https://github.com/latchset/keycloak-httpd-client-install/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+# Source0:        https://github.com/latchset/keycloak-httpd-client-install/releases/download/v%{version}/keycloak-httpd-client-install-%{version}.tar.gz
 
 BuildArch:      noarch
 
@@ -79,7 +80,8 @@ of a Keycloak server.
 %endif
 
 %prep
-%autosetup -n %{srcname}-%{git_tag} -p1
+%autosetup
+# %autosetup -n %{srcname}-%{git_tag} -p1
 
 %build
 %if %{with python2}

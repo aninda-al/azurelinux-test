@@ -1,7 +1,7 @@
 Summary:        Fast and Lightweight Log processor and forwarder for Linux, BSD and OSX
 Name:           fluent-bit
 Version:        3.1.9
-Release:        1%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 Vendor:         Microsoft Corporation
 Distribution:   Azure Linux
@@ -9,6 +9,9 @@ URL:            https://fluentbit.io
 Source0:        https://github.com/fluent/%{name}/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Patch0:         CVE-2024-34250.patch
 Patch1:         CVE-2024-25431.patch
+Patch2:         CVE-2024-27532.patch
+Patch3:         CVE-2024-50608.patch
+Patch4:         CVE-2024-50609.patch
 BuildRequires:  bison
 BuildRequires:  cmake
 BuildRequires:  cyrus-sasl-devel
@@ -83,6 +86,12 @@ Development files for %{name}
 %{_libdir}/fluent-bit/*.so
 
 %changelog
+* Wed Feb 26 2025 Kshitiz Godara <kgodara@microsoft.com> - 3.1.9-3
+- Address CVE-2024-50608 and CVE-2024-50609
+
+* Tue Dec 10 2024 Sudipta Pandit <sudpandit@microsoft.com> - 3.1.9-2
+- Backport fixes for CVE-2024-27532
+
 * Tue Nov 23 2024 Paul Meyer <paul.meyer@microsoft.com> - 3.1.9-1
 - Update to 3.1.9 to enable Lua filter plugin using system luajit library.
 - Remove patches for CVE-2024-25629 and CVE-2024-28182 as they are fixed in 3.1.9.

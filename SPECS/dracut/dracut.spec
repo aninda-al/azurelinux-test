@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        102
-Release:        7%{?dist}
+Release:        12%{?dist}
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
 License:        GPLv2+ AND LGPLv2+
@@ -30,6 +30,7 @@ Source11:       50-noxattr.conf
 # code reviews given that they are new to Dracut.
 Source12:       90livenet/azl-liveos-artifacts-download.service
 Source13:       90livenet/azl-liveos-artifacts-download.sh
+Source14:       90overlayfs/azl-configure-selinux.sh
 
 # allow-liveos-overlay-no-user-confirmation-prompt.patch has been introduced by
 # the Azure Linux team to allow skipping the user confirmation prompt during
@@ -53,6 +54,18 @@ Patch:          0012-fix-dracut-functions-avoid-awk-in-get_maj_min.patch
 Patch:          0013-revert-fix-crypt-unlock-encrypted-devices-by-default.patch
 Patch:          0014-fix-systemd-pcrphase-in-hostonly-mode-do-not-try-to-include-systemd-pcrphase.patch
 Patch:          0015-fix-systemd-pcrphase-make-tpm2-tss-an-optional-dependency.patch
+Patch:          0016-Handle-SELinux-configuration-for-overlayfs-folders.patch
+Patch:          avoid-mktemp-collisions-with-find-not-path.patch
+# fix-dracut-systemd-include-systemd-cryptsetup.patch has been introduced  
+# by the Azure Linux team to ensure that the systemd-cryptsetup module is included  
+# in the initramfs when needed.  
+# In dracut 102, systemd-cryptsetup was split from the crypt module and is no longer  
+# included by default, causing encrypted volumes in crypttab to be skipped in initrd.  
+# This patch modifies dracut-systemd to explicitly include systemd-cryptsetup.  
+# The patch can be removed if Dracut is upgraded to 104+.
+# - References: https://github.com/dracut-ng/dracut-ng/pull/262  
+#               https://github.com/dracut-ng/dracut-ng/commit/e0e5424a7b5e387ccb70e47ffea5a59716bf7b76  
+Patch:          fix-dracut-systemd-include-systemd-cryptsetup.patch
 
 BuildRequires:  bash
 BuildRequires:  kmod-devel
@@ -205,6 +218,8 @@ install -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/dracut.conf.d/50-noxattr.
 install -m 0644 %{SOURCE12} %{buildroot}%{dracutlibdir}/modules.d/90livenet/azl-liveos-artifacts-download.service
 install -m 0755 %{SOURCE13} %{buildroot}%{dracutlibdir}/modules.d/90livenet/azl-liveos-artifacts-download.sh
 
+install -m 0755 %{SOURCE14} %{buildroot}%{dracutlibdir}/modules.d/90overlayfs/azl-configure-selinux.sh
+
 mkdir -p %{buildroot}%{dracutlibdir}/modules.d/20overlayfs/
 install -p -m 0755 %{SOURCE4} %{buildroot}%{dracutlibdir}/modules.d/20overlayfs/
 install -p -m 0755 %{SOURCE5} %{buildroot}%{dracutlibdir}/modules.d/20overlayfs/
@@ -310,6 +325,21 @@ ln -srv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_sbindir}/%{name}
 %dir %{_sharedstatedir}/%{name}/overlay
 
 %changelog
+* Tue Mar 11 2025 Archana Choudhary <archana1@microsoft.com> - 102-12
+- Add fix for systemd-cryptsetup module to be included in initramfs when needed
+
+* Mon Mar 05 2025 George Mileka <gmileka@microsoft.com> - 102-11
+- Update overlayfs selinux handling with the full path of chcon
+
+* Tue Feb 25 2025 Cameron Baird <cameronbaird@microsoft.com> - 102-10
+- Fix 0006-dracut.sh-validate-instmods patch to not break crypto module blacklisting
+
+* Tue Feb 04 2025 Brian Fjeldstad <bfjelds@microsoft.com> - 102-9
+- Avoid mktemp folder name colliding with find filter.
+
+* Mon Dec 09 2024 George Mileka <gmileka@microsoft.com> - 102-8
+- Augment overlayfs with selinux handling.
+
 * Thu Oct 31 2024 George Mileka <gmileka@microsoft.com> - 102-7
 - Augment livenet module with a download daemon.
 
